@@ -7,6 +7,13 @@ describe("Testing Ship", () => {
         marshall = new Ship(3);
     })
 
+    test('Hit Ship and not isSunk', () => {
+        
+        marshall.hit();
+
+        expect(marshall.isSunk()).toBe(false);
+    });
+
     test('Hit Ship and isSunk', () => {
         
         marshall.hit();

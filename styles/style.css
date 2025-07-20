@@ -1,0 +1,23 @@
+div#game {
+    display: flex;
+    justify-content: space-evenly;
+}
+.grid {
+    display: grid;
+    grid-template-columns: repeat(10, 30px);
+    grid-template-rows: repeat(10, 30px);
+}
+.cell {
+    border: 1px solid #ccc;
+    width: 30px;
+    height: 30px;
+}
+.cell.hit {
+    background-color: red;
+}
+.cell.miss {
+    background-color: gray;
+}
+.pe-none {
+    pointer-events: none;
+}
