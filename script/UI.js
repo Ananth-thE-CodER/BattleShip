@@ -1,3 +1,6 @@
+import { GameController } from "./gameController.js";
+import { Player } from "./player.js";
+
 export class UI {
     renderBoards(player1, player2) {
         const player1Grid = document.querySelector("#player1-board");
@@ -25,6 +28,9 @@ export class UI {
                 player2Grid.appendChild(player2Cell);
             }
         }
+        let turnText = document.querySelector("span.turn-text")
+        turnText.innerText = "Player 1's Turn";
+        player1Grid.classList.add("pe-none");
     }
 
     listenForAttacks(callback) {
@@ -32,11 +38,10 @@ export class UI {
 
         cells.forEach(cell => {
             cell.addEventListener("click", () => {
-                debugger;
                 const x = parseInt(cell.dataset.row);
                 const y = parseInt(cell.dataset.col);
                 callback(x, y);
-            });
+            }, {once: true});
         });
     }
 
@@ -49,4 +54,51 @@ export class UI {
             cell.classList.add("miss");
         }
     }
+
+    setTurnText(player) {
+        let turnText = document.querySelector("span.turn-text")
+        turnText.innerText = `${player.name}'s Turn`
+    }
+
+    announceWinner(player) {
+        let turnText = document.querySelector("span.turn-text")
+        turnText.innerText = `${player.name} Won!!`
+    }
+
+    setBoardsInert() {
+        let boards = document.querySelectorAll("div.board");
+        boards.forEach(board => {
+            board.classList.add("pe-none");
+        })
+    }
+
+    setBoardsActive() {
+        let boards = document.querySelectorAll("div.board");
+        if (boards.length > 1) {
+            boards[1].classList.remove("pe-none");
+        }
+    }
+
+    showRestartButton() {
+        let button = document.querySelector("button.restart");
+        button.classList.remove("display-none");
+    }
+
+    clickRestartButton() {
+        let button = document.querySelector("button.restart");
+        button.addEventListener("click", () => {
+            const player1 = new Player("Player 1");
+            const player2 = new Player("Computer", true);
+            const controller = new GameController(player1, player2);
+            controller.restartGame();
+            this.setBoardsActive()
+        })
+    }
+
+    renderShipPalette() {
+        const ships = document.querySelectorAll("div.ship-palette div.ship");
+        
+    }
+
+    
 }

@@ -1,7 +1,9 @@
 import { GameBoard } from "./gameBoard.js";
 
 export class Player {
-    constructor() {
+    constructor(name, isComputer = false) {
+        this.name = name;
+        this.isComputer = isComputer;
         this.gameBoard = new GameBoard();
         this.id = crypto.randomUUID();
     }
