@@ -12,4 +12,8 @@ export class Player {
         const gameBoard = player.gameBoard;
         return gameBoard.receiveAttack(x, y);
     }
+
+    reset() {
+        this.gameBoard.resetBoard();
+    }
 }

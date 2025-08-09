@@ -43,4 +43,10 @@ export class GameBoard {
     allShipsSunk() {
         return this.ships.every(({ ship }) => ship.isSunk());
     }
+
+    resetBoard() {
+        this.board = Array.from({ length: 10 }, () => Array(10).fill(null));
+        this.ships = [];
+    }
+
 }

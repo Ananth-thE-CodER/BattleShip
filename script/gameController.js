@@ -6,20 +6,14 @@ export class GameController {
         this.players = [player1, player2];
         this.activePlayer = player1;
         this.inActivePlayer = this.players.filter(player => player.id != this.activePlayer.id)[0];
+        this.computerMoves = new Set();
     }
 
     startGame() {
-        const player1 = this.players[0];
         const player2 = this.players[1];
-        
-        // Place a ship manually
-        player1.gameBoard.placeShip(0, 0, 3);
-        player2.gameBoard.placeShip(2, 2, 2);
-
+        this.placeComputerShips(player2);
         const ui = new UI();
-
-        ui.renderBoards(player1, player2);
-
+        ui.showGameBoard();
         if (!this.activePlayer.isComputer) {
             ui.listenForAttacks((x, y) => {
                 this.handlePlayerMove(x, y, ui);
@@ -47,9 +41,8 @@ export class GameController {
             this.switchActivePlayer(ui);
             this.boardSwitcher();
         }
-        else {
-            if (this.checkWinner(attacker, defender, ui)) return;
-        }
+
+        if (this.checkWinner(attacker, defender, ui)) return;
 
         // If computer is next, let it play
         if (this.activePlayer.isComputer) {
@@ -59,9 +52,14 @@ export class GameController {
 
     computerPlay(attacker, defender, ui) {
         setTimeout(() => {
-            let x, y, result;
-            x = Math.floor(Math.random() * 10);
-            y = Math.floor(Math.random() * 10);
+            let x, y, key, result;
+            do {
+                x = Math.floor(Math.random() * 10);
+                y = Math.floor(Math.random() * 10);
+                key = `${x},${y}`;
+            } while (this.computerMoves.has(key));
+
+            this.computerMoves.add(key);
 
             result = attacker.attack(defender, x, y);
 
@@ -72,10 +70,12 @@ export class GameController {
                 this.boardSwitcher();
             }
             else {  // Hit
-                if (this.checkWinner(attacker, defender, ui)) return;
                 this.computerPlay(attacker, defender, ui);
             }
-        }, 500); 
+
+            if (this.checkWinner(attacker, defender, ui)) return;
+
+        }, 500);
     }
 
     boardSwitcher() {
@@ -95,12 +95,11 @@ export class GameController {
     }
 
     closeGame(ui) {
-        ui.setBoardsInert();
         ui.showRestartButton();
-        return;
     }
 
-    restartGame() {
+    restartGame(ui) {
+        ui.setBoardsActive()
         this.startGame();
     }
 
@@ -111,5 +110,26 @@ export class GameController {
             return true;
         }
         return false;
+    }
+
+    placeComputerShips(computerPlayer) {
+        const ships = [4, 3, 3, 4, 2, 1, 1, 1];
+
+        for (const ship of ships) {
+            let placed = false;
+
+            while (!placed) {
+                const isVertical = Math.random() < 0.5;
+                const x = Math.floor(Math.random() * 10);
+                const y = Math.floor(Math.random() * 10);
+
+                try {
+                    computerPlayer.gameBoard.placeShip(x, y, ship, isVertical);
+                    placed = true;
+                } catch (e) {
+                    // Invalid placement — try again
+                }
+            }
+        }
     }
 }
